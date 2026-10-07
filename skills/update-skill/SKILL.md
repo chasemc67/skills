@@ -1,10 +1,10 @@
 ---
 name: update-skill
 description: Sends edits made to a locally installed skill from chasemc67/skills back upstream as a pull request against github.com/chasemc67/skills, so that repo stays the source of truth. Use when you have changed, fixed, or improved an installed skill (files under .agents/skills/<name>/, .claude/skills/, .cursor/skills/, etc., tracked in skills-lock.json) whose source is chasemc67/skills, or when you want to change one. Also use when the user says "update the skill", "push this skill change upstream", or "send this skill fix back". Opens a PR; never merges.
-compatibility: Requires git and network access to GitHub; the repo is public, so cloning needs no auth. Opening the PR needs GitHub CLI (gh) with permission to push a branch to chasemc67/skills (or a fork) and open a PR; without that, it produces a patch instead. Node 18+ for npx skills.
+compatibility: Requires git and network access to GitHub; the repo is public, so cloning needs no auth. Opening the PR needs one of - git/gh auth that can push to chasemc67/skills, a SKILLS_GITHUB_TOKEN with write access to it, or GitHub MCP/connector tools that can create a branch, commit files, and open a PR there. A patch file is the last resort. Node 18+ for npx skills.
 metadata:
   author: chasemc67
-  version: "0.1.2"
+  version: "0.1.3"
 ---
 
 # Update skill
@@ -37,7 +37,7 @@ git clone https://github.com/chasemc67/skills.git "$WORK/skills"   # or: gh repo
 cd "$WORK/skills"
 ```
 
-The repo is public, so cloning needs no auth. Pushing a branch and opening a PR do need it: before doing the work, check whether this environment can push (for example `gh auth status` succeeds and `gh repo view chasemc67/skills --json viewerPermission` shows `WRITE`, `MAINTAIN` or `ADMIN`, or you can fork). If it can't, still make and check the change in the clone, then use the patch fallback in [Failure modes](#failure-modes).
+The repo is public, so cloning needs no auth. Pushing a branch and opening a PR do need write access; step 4 lists the ways to get it, in order. Work out early which one this environment has.
 
 ## 3. Copy the changes onto a branch
 
@@ -71,23 +71,38 @@ If `SKILL.md` frontmatter changed, `name` must still match the folder name and `
 
 1. Run whatever checks the skill has. If `skills/<skill>/package.json` has a `check` script, run `npm run check` in that folder; also run any sample or test script that covers what you changed. From the repo root, `npx skills add . --list` should still list the skill.
 2. Commit with a clear message, for example `guided-pr-review: fix --model flag parsing`.
-3. Push: `git push -u origin update-skill/<skill>-<short-desc>`.
-4. Open the PR:
+3. Push the branch and open the PR, using the first of these that works:
 
-   ```bash
-   gh pr create --repo chasemc67/skills --base main \
-     --title "<skill>: <what changed>" \
-     --body-file pr-body.md
-   ```
+   1. **Local git/gh auth with push access.** Check with `gh auth status` and `gh repo view chasemc67/skills --json viewerPermission` (`WRITE`, `MAINTAIN` or `ADMIN`). Then:
 
-   The body should cover:
+      ```bash
+      git push -u origin update-skill/<skill>-<short-desc>
+      gh pr create --repo chasemc67/skills --base main --head update-skill/<skill>-<short-desc> \
+        --title "<skill>: <what changed>" --body-file pr-body.md
+      ```
+
+   2. **`SKILLS_GITHUB_TOKEN` is set** (a token with write access to `chasemc67/skills`). Use it only for this repo's URL, and never print it. Ignoring the global and system git config keeps any `url.*.insteadOf` rewrites that inject a different token out of the way:
+
+      ```bash
+      GIT_CONFIG_GLOBAL=/dev/null GIT_CONFIG_NOSYSTEM=1 GIT_TERMINAL_PROMPT=0 git -c credential.helper= \
+          -c "http.https://github.com/chasemc67/skills.git.extraheader=AUTHORIZATION: basic $(printf 'x-access-token:%s' "$SKILLS_GITHUB_TOKEN" | base64 | tr -d '\n')" \
+          push -u https://github.com/chasemc67/skills.git update-skill/<skill>-<short-desc>
+      GH_TOKEN="$SKILLS_GITHUB_TOKEN" gh pr create --repo chasemc67/skills --base main \
+        --head update-skill/<skill>-<short-desc> --title "<skill>: <what changed>" --body-file pr-body.md
+      ```
+
+   3. **GitHub MCP/connector tools.** For example, Cursor cloud agents have a git token that only covers their own repo, but their GitHub tools act as a user who can write to `chasemc67/skills`. Use those tools, not git: create the branch `update-skill/<skill>-<short-desc>` from `main`, commit each changed file onto it (`create_or_update_file` / `push_files` style tools; delete removed files the same way), then open the PR against `main` with the same title and body. Afterwards check the PR's file list or a compare against `main` to confirm it holds exactly your change.
+
+   4. **Last resort: a patch file**, only if none of the above works. See [Failure modes](#failure-modes).
+
+   The PR body should cover:
    - **What changed**: files and behavior.
    - **Why**: the bug or need that prompted it.
    - **Where it came from**: the consuming repo (e.g. `Social-RV/social-rv`), the agent or session, and a link to the related PR or issue if there is one.
    - **How it was tested**: the commands you ran and what they showed.
    - **Upstream note**, if any (see below).
 
-5. Don't merge or enable auto-merge. Report the PR URL to the user.
+4. Don't merge or enable auto-merge. Report the PR URL to the user.
 
 ### Skills synced from another repo
 
@@ -106,13 +121,13 @@ Commit the refreshed files and lock file in the consuming repo if it tracks them
 
 ## Failure modes
 
-If you can't push to or open a PR on `chasemc67/skills`, don't drop the change. This is the expected path for cloud agents whose GitHub token only covers their own repo (for example Cursor cloud agents), and for environments where `gh` isn't authenticated. Don't go looking for other tokens or credentials to get around it; write the patch and hand it off:
+If none of the PR paths in step 4 works (no push access, no `SKILLS_GITHUB_TOKEN`, and no GitHub tools that can commit files and open a PR), don't drop the change. Don't go hunting for other tokens or credentials; write a patch and hand it off:
 
 1. Produce a patch against `chasemc67/skills` layout (paths like `skills/<skill>/...`):
    - With a clone and a local commit: `git format-patch origin/main --stdout > update-skill-<skill>.patch`.
    - Without a clone: write a unified diff using `skills/<skill>/` paths, for example from the consuming repo's `git diff` with the prefix rewritten.
 2. Save it somewhere that will survive the session: the consuming repo's working tree (not committed unless the user wants that), an artifacts folder, or the agent's output. Don't commit it to the consuming repo's main branch by default.
-3. Tell the user clearly that the PR could not be opened, why (the exact error, e.g. `403` / `Permission denied`), and give the patch path and its contents. A human, or a local agent with `gh` auth, can then apply it in a clone of `chasemc67/skills` with `git am` (or `git apply`), push a branch, and open the PR with `gh pr create --repo chasemc67/skills`.
+3. Tell the user clearly that the PR could not be opened, which paths you tried and why each failed (the exact errors, e.g. `403` / `Permission denied`), and give the patch path and its contents. A human, or a local agent with `gh` auth, can then apply it in a clone of `chasemc67/skills` with `git am` (or `git apply`), push a branch, and open the PR with `gh pr create --repo chasemc67/skills`.
 
 Other cases:
 
