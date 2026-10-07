@@ -9,9 +9,9 @@ Full project, screenshots and design notes: <https://github.com/chasemc67/guided
 ## Install as a skill
 
 ```bash
-npx skills add chasemc67/skills --skill guided-pr-review
+npx skills add Social-RV/skills --skill guided-pr-review
 # or
-npx skills add chasemc67/skills@guided-pr-review
+npx skills add Social-RV/skills@guided-pr-review
 ```
 
 Then ask your agent something like *"walk me through https://github.com/owner/repo/pull/123"*. [`SKILL.md`](SKILL.md) tells the agent when and how to run it.

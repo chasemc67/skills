@@ -10,23 +10,23 @@ This repo is private. `npx skills` uses whatever GitHub auth you already have: n
 
 ```bash
 # list the skills in this repo without installing anything
-npx skills add chasemc67/skills --list
+npx skills add Social-RV/skills --list
 
 # interactive: pick skills and agents
-npx skills add chasemc67/skills
+npx skills add Social-RV/skills
 
 # install one skill
-npx skills add chasemc67/skills --skill guided-pr-review
-npx skills add chasemc67/skills@guided-pr-review
+npx skills add Social-RV/skills --skill guided-pr-review
+npx skills add Social-RV/skills@guided-pr-review
 
 # install one skill globally for a specific agent, no prompts
-npx skills add chasemc67/skills --skill guided-pr-review -g -a claude-code -y
+npx skills add Social-RV/skills --skill guided-pr-review -g -a claude-code -y
 
 # install every skill
-npx skills add chasemc67/skills --skill '*'
+npx skills add Social-RV/skills --skill '*'
 
 # SSH source, if you prefer
-npx skills add git@github.com:chasemc67/skills.git
+npx skills add git@github.com:Social-RV/skills.git
 ```
 
 Keep installed skills current with `npx skills update`, and see what's installed with `npx skills list`.
@@ -36,7 +36,7 @@ Keep installed skills current with `npx skills update`, and see what's installed
 | Skill | Description |
 |---|---|
 | [`guided-pr-review`](skills/guided-pr-review) | Turns a GitHub pull request into a guided walkthrough (Overview with before/after, chaptered Guide, Diff) as one self-contained HTML page. |
-| [`update-skill`](skills/update-skill) | Sends edits made to a locally installed copy of one of these skills back upstream as a pull request against `chasemc67/skills`. |
+| [`update-skill`](skills/update-skill) | Sends edits made to a locally installed copy of one of these skills back upstream as a pull request against `Social-RV/skills`. |
 
 ## Adding a skill
 
