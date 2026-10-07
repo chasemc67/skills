@@ -4,7 +4,7 @@ Agent skill that turns any GitHub pull request into a **guided walkthrough**: an
 
 Live samples: [ky#760 (annotated before/after)](https://chasemc67.github.io/guided-pr-review/samples/ky-760-walkthrough.html) · [ky#873 (flow-diagram before/after)](https://chasemc67.github.io/guided-pr-review/samples/ky-873-walkthrough.html)
 
-Full project, screenshots and design notes: <https://github.com/chasemc67/guided-pr-review> (this folder is copied from `main` @ `41269bf`).
+Full project, screenshots and design notes: <https://github.com/chasemc67/guided-pr-review> (this folder is copied from `main` @ `2e55f0d`).
 
 ## Install as a skill
 
@@ -18,7 +18,7 @@ Then ask your agent something like *"walk me through https://github.com/owner/re
 
 ## Run directly
 
-Requirements: **Node 18.17+** and the **GitHub CLI** ([`gh`](https://cli.github.com/)) logged in (or `GH_TOKEN`). No npm dependencies.
+Requirements: **Node 18.17+** and the **GitHub CLI 2.48.0+** ([`gh`](https://cli.github.com/)) logged in (or `GH_TOKEN`). No npm dependencies.
 
 ```bash
 cp .env.example .env              # optional: add AI_GATEWAY_API_KEY for AI chapters

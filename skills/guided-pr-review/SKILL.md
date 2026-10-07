@@ -2,7 +2,7 @@
 name: guided-pr-review
 description: Turns a GitHub pull request into a guided walkthrough (Overview with before/after, chaptered Guide, and Diff) as one self-contained offline HTML page. Use when the user shares a PR URL or owner/repo#number and asks to explain it, walk through it, summarize it for review, "guide me through" it, or wants to understand a large PR in a sensible reading order before reviewing. Read-only; does not post review comments.
 license: MIT
-compatibility: Requires Node 18.17+ and the GitHub CLI (gh) logged in, or GH_TOKEN, with read access to the repo. Optional AI_GATEWAY_API_KEY (Vercel AI Gateway) enables AI-written chapters; without it a heuristic guide is produced. Needs network access to GitHub.
+compatibility: Requires Node 18.17+ and GitHub CLI (gh) 2.48.0+ logged in, or GH_TOKEN, with read access to the repo. Optional AI_GATEWAY_API_KEY (Vercel AI Gateway) enables AI-written chapters; without it a heuristic guide is produced. Needs network access to GitHub.
 metadata:
   author: chasemc67
   version: "0.1.0"
@@ -33,7 +33,7 @@ Don't use it for posting review comments to GitHub; this skill only reads.
 | Output directory | `--out <dir>` (default `./guided-review`, relative to the current working directory) |
 | Model | `--model <gateway-model-id>` or `GUIDED_REVIEW_MODEL` |
 
-Requirements: Node 18.17+, the GitHub CLI (`gh`) logged in (or `GH_TOKEN` set) with read access to the repo. There are no npm dependencies, so no install step is needed. For AI chapters and prose, set `AI_GATEWAY_API_KEY` (Vercel AI Gateway) in the environment or in a `.env` file (in the current directory or in this skill's folder; see `.env.example`). Without it, the skill still produces a heuristic guide. Heuristic pages show an amber banner on every tab saying why AI wasn't used, the analysis JSON records it in `generatedBy` (`mode`, `reason`, `model`), and the CLI prints a warning to stderr. If the AI call fails, the CLI falls back to the heuristic guide instead of exiting. Never print or commit the key.
+Requirements: Node 18.17+, GitHub CLI 2.48.0+ (`gh`) logged in (or `GH_TOKEN` set) with read access to the repo. There are no npm dependencies, so no install step is needed. For AI chapters and prose, set `AI_GATEWAY_API_KEY` (Vercel AI Gateway) in the environment or in a `.env` file (in the current directory or in this skill's folder; see `.env.example`). Without it, the skill still produces a heuristic guide. Heuristic pages show an amber banner on every tab saying why AI wasn't used, the analysis JSON records it in `generatedBy` (`mode`, `reason`, `model`), and the CLI prints a warning to stderr. If the AI call fails, the CLI falls back to the heuristic guide instead of exiting. Never print or commit the key.
 
 ## How to run
 
