@@ -1,0 +1,8 @@
+node_modules/
+.env
+.env.*
+!.env.example
+out/
+guided-review/
+.DS_Store
+*.log
