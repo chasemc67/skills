@@ -36,6 +36,7 @@ Keep installed skills current with `npx skills update`, and see what's installed
 | Skill | Description |
 |---|---|
 | [`guided-pr-review`](skills/guided-pr-review) | Turns a GitHub pull request into a guided walkthrough (Overview with before/after, chaptered Guide, Diff) as one self-contained HTML page. |
+| [`update-skill`](skills/update-skill) | Sends edits made to a locally installed copy of one of these skills back upstream as a pull request against `chasemc67/skills`. |
 
 ## Adding a skill
 
