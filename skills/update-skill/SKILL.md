@@ -1,23 +1,23 @@
 ---
 name: update-skill
-description: Sends edits made to a locally installed skill from Social-RV/skills back upstream as a pull request against github.com/Social-RV/skills, so that repo stays the source of truth. Use when you have changed, fixed, or improved an installed skill (files under .agents/skills/<name>/, .claude/skills/, .cursor/skills/, etc., tracked in skills-lock.json) whose source is Social-RV/skills, or when you want to change one. Also use when the user says "update the skill", "push this skill change upstream", or "send this skill fix back". Opens a PR; never merges.
-compatibility: Requires git and GitHub CLI (gh) with write access to Social-RV/skills (or another way to push a branch and open a PR). Needs network access to GitHub. Node 18+ for npx skills.
+description: Sends edits made to a locally installed skill from chasemc67/skills back upstream as a pull request against github.com/chasemc67/skills, so that repo stays the source of truth. Use when you have changed, fixed, or improved an installed skill (files under .agents/skills/<name>/, .claude/skills/, .cursor/skills/, etc., tracked in skills-lock.json) whose source is chasemc67/skills, or when you want to change one. Also use when the user says "update the skill", "push this skill change upstream", or "send this skill fix back". Opens a PR; never merges.
+compatibility: Requires git and network access to GitHub; the repo is public, so cloning needs no auth. Opening the PR needs GitHub CLI (gh) with permission to push a branch to chasemc67/skills (or a fork) and open a PR; without that, it produces a patch instead. Node 18+ for npx skills.
 metadata:
   author: chasemc67
-  version: "0.1.1"
+  version: "0.1.2"
 ---
 
 # Update skill
 
-Skills from `Social-RV/skills` get installed into other repos with `npx skills add Social-RV/skills --skill <name>`. The installed copy is just a copy: if you edit it there, the edit is lost on the next `npx skills update` and nobody else gets it. This skill turns those local edits into a PR against `Social-RV/skills`.
+Skills from `chasemc67/skills` get installed into other repos with `npx skills add chasemc67/skills --skill <name>`. The installed copy is just a copy: if you edit it there, the edit is lost on the next `npx skills update` and nobody else gets it. This skill turns those local edits into a PR against `chasemc67/skills`.
 
 Do this whenever you change an installed skill from this library, not only when asked. Chase reviews and merges; you only open the PR.
 
 ## 1. Find the changed skill and its source
 
 1. Identify the skill you changed (or are about to change) and its folder name `<skill>`.
-2. Confirm it came from `Social-RV/skills` (installs made before the repo moved to the Social-RV org may list its old name, `chasemc67/skills`; GitHub redirects it, so treat that as the same repo):
-   - Project install: `skills-lock.json` at the consuming repo's root has `skills.<skill>.source == "Social-RV/skills"` and a `skillPath` such as `skills/<skill>/SKILL.md`.
+2. Confirm it came from `chasemc67/skills` (the repo briefly lived at `Social-RV/skills`, so older lock entries may say `Social-RV/skills`; GitHub redirects that name, so treat it as the same repo):
+   - Project install: `skills-lock.json` at the consuming repo's root has `skills.<skill>.source` set to `"chasemc67/skills"` (or the legacy `"Social-RV/skills"`) and a `skillPath` such as `skills/<skill>/SKILL.md`.
    - Global install: the same entry is in `~/.agents/.skill-lock.json`.
    - If the source is a different repo, stop: this skill doesn't apply. If there's no lock entry but the `SKILL.md` frontmatter has `metadata.author: chasemc67`, ask the user before continuing.
 3. Find the local files. `npx skills list --json` gives each skill's `path` (project installs usually live at `.agents/skills/<skill>/`). Agent folders like `.claude/skills/<skill>` are usually symlinks to that path; resolve them with `realpath` so you read the real files and don't edit or copy a link.
@@ -27,17 +27,17 @@ Do this whenever you change an installed skill from this library, not only when 
 
 ## 2. Get the repo
 
-Reuse an existing clone if there is one (for example `~/src/skills`): check `git remote -v` points at `Social-RV/skills`, that the working tree is clean, then `git fetch origin && git checkout main && git pull --ff-only`.
+Reuse an existing clone if there is one (for example `~/src/skills`): check `git remote -v` points at `chasemc67/skills` (or the legacy `Social-RV/skills` name, which redirects), that the working tree is clean, then `git fetch origin && git checkout main && git pull --ff-only`.
 
 Otherwise clone to a temp folder:
 
 ```bash
 WORK=$(mktemp -d)
-gh repo clone Social-RV/skills "$WORK/skills"   # or: git clone https://github.com/Social-RV/skills.git
+git clone https://github.com/chasemc67/skills.git "$WORK/skills"   # or: gh repo clone chasemc67/skills "$WORK/skills"
 cd "$WORK/skills"
 ```
 
-The repo is private; `gh` uses the existing GitHub auth. If cloning fails for lack of access, go to [Failure modes](#failure-modes).
+The repo is public, so cloning needs no auth. Pushing a branch and opening a PR do need it: before doing the work, check whether this environment can push (for example `gh auth status` succeeds and `gh repo view chasemc67/skills --json viewerPermission` shows `WRITE`, `MAINTAIN` or `ADMIN`, or you can fork). If it can't, still make and check the change in the clone, then use the patch fallback in [Failure modes](#failure-modes).
 
 ## 3. Copy the changes onto a branch
 
@@ -75,7 +75,7 @@ If `SKILL.md` frontmatter changed, `name` must still match the folder name and `
 4. Open the PR:
 
    ```bash
-   gh pr create --repo Social-RV/skills --base main \
+   gh pr create --repo chasemc67/skills --base main \
      --title "<skill>: <what changed>" \
      --body-file pr-body.md
    ```
@@ -106,13 +106,13 @@ Commit the refreshed files and lock file in the consuming repo if it tracks them
 
 ## Failure modes
 
-If you can't push to or open a PR on `Social-RV/skills` (for example, a cloud agent whose GitHub token doesn't include `Social-RV/skills`, or `gh` isn't authenticated), don't drop the change:
+If you can't push to or open a PR on `chasemc67/skills`, don't drop the change. This is the expected path for cloud agents whose GitHub token only covers their own repo (for example Cursor cloud agents), and for environments where `gh` isn't authenticated. Don't go looking for other tokens or credentials to get around it; write the patch and hand it off:
 
-1. Produce a patch against `Social-RV/skills` layout (paths like `skills/<skill>/...`):
+1. Produce a patch against `chasemc67/skills` layout (paths like `skills/<skill>/...`):
    - With a clone and a local commit: `git format-patch origin/main --stdout > update-skill-<skill>.patch`.
    - Without a clone: write a unified diff using `skills/<skill>/` paths, for example from the consuming repo's `git diff` with the prefix rewritten.
 2. Save it somewhere that will survive the session: the consuming repo's working tree (not committed unless the user wants that), an artifacts folder, or the agent's output. Don't commit it to the consuming repo's main branch by default.
-3. Tell the user clearly that the PR could not be opened, why (the exact error, e.g. `403` / `Repository not found`), and give the patch path and its contents so a human can apply it with `git am` or `git apply`.
+3. Tell the user clearly that the PR could not be opened, why (the exact error, e.g. `403` / `Permission denied`), and give the patch path and its contents. A human, or a local agent with `gh` auth, can then apply it in a clone of `chasemc67/skills` with `git am` (or `git apply`), push a branch, and open the PR with `gh pr create --repo chasemc67/skills`.
 
 Other cases:
 
