@@ -31,7 +31,7 @@ npm run sample                    # offline render of the bundled ky#760 sample 
 | Variable | Purpose |
 |---|---|
 | `AI_GATEWAY_API_KEY` | [Vercel AI Gateway](https://vercel.com/docs/ai-gateway) key. Enables AI chapters and prose; without it the CLI falls back to the heuristic guide. |
-| `GUIDED_REVIEW_MODEL` | Override the default model (`anthropic/claude-sonnet-4.5`). |
+| `GUIDED_REVIEW_MODEL` | Override the default model (`anthropic/claude-sonnet-5.5`). |
 | `GH_TOKEN` | Optional. By default the `gh` CLI's own auth is used. |
 
 `.env` in the working directory or in this folder is loaded automatically. Never commit it.
