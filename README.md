@@ -52,3 +52,5 @@ Never commit secrets: `.env` files are ignored; ship a `.env.example` instead.
 - Agent Skills specification: <https://agentskills.io/specification>
 - `skills` CLI: <https://github.com/vercel-labs/skills>
 - Skills directory: <https://skills.sh>
+
+<!-- temporary cloud agent access test; this PR will be closed -->
