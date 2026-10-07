@@ -30,7 +30,7 @@ npm run sample                    # offline render of the bundled ky#760 sample 
 
 | Variable | Purpose |
 |---|---|
-| `AI_GATEWAY_API_KEY` | [Vercel AI Gateway](https://vercel.com/docs/ai-gateway) key. Enables AI chapters and prose; without it the CLI falls back to the heuristic guide. |
+| `AI_GATEWAY_API_KEY` | [Vercel AI Gateway](https://vercel.com/docs/ai-gateway) key. Enables AI chapters and prose. If it's missing, or the AI call fails, the CLI falls back to the heuristic guide, prints a warning to stderr, shows an amber banner on every tab, and records why in the analysis JSON's `generatedBy` (`mode`, `reason`, `model`). |
 | `GUIDED_REVIEW_MODEL` | Override the default model (`anthropic/claude-sonnet-5.5`). |
 | `GH_TOKEN` | Optional. By default the `gh` CLI's own auth is used. |
 
