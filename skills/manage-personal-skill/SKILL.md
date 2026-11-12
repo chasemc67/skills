@@ -33,6 +33,8 @@ Personal skills live in a local clone of [`chasemc67/skills`](https://github.com
 
 If you aren't Chase, use your own fork or your own repo with the same `skills/<name>/` layout in place of `chasemc67/skills`.
 
+The open-source [`skills` CLI](https://github.com/vercel-labs/skills) (`npx skills add chasemc67/skills`) is the other way to get these skills. It installs copies, so edits to them don't reach the repo. That suits machines where you only use the skills. Where you write or edit skills, use the clone and the symlinks below instead. To send an edit made to an installed copy back to the repo, use the `update-skill` skill.
+
 Each skill gets an **absolute** symlink, pointing directly at its folder in the clone, in each of:
 
 - `~/.agents/skills`
