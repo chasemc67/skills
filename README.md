@@ -37,6 +37,7 @@ Keep installed skills current with `npx skills update`, and see what's installed
 |---|---|
 | [`guided-pr-review`](skills/guided-pr-review) | Turns a GitHub pull request into a guided walkthrough (Overview with before/after, chaptered Guide, Diff) as one self-contained HTML page. |
 | [`load-repo-context`](skills/load-repo-context) | Loads another repo's skills index and `AGENTS.md` / `CLAUDE.md` instructions when a session works outside the workspace root, since harnesses only auto-load them for the root. |
+| [`manage-personal-skill`](skills/manage-personal-skill) | Creates, updates, renames, and deletes skills in a local clone of this repo, symlinks them into each agent harness, and saves every change as a PR. Also covers repo-specific skills in `<repo>/.agents/skills`. |
 | [`update-skill`](skills/update-skill) | Sends edits made to a locally installed copy of one of these skills back upstream as a pull request against `chasemc67/skills`. |
 
 ## Adding a skill
